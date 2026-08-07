@@ -1,0 +1,36 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Node modules (just in case frontend tooling is added later)
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Databases
+*.sqlite3
+*.db
+# Let's keep crop_system.db in git if it's meant to be shared, but usually dbs are ignored. 
+# We'll ignore it to be safe, they can remove this line if they want it committed.
+database/*.db
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

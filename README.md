@@ -37,11 +37,13 @@ intelligent_crop_system/
 ├── app.py                     # Main Streamlit application entry point
 ├── requirements.txt           # Python dependencies
 ├── .env.example               # Environment variables template
+├── assets/                    # Static assets like Custom CSS
 ├── data/                      # Raw Kaggle datasets
 ├── database/                  # SQLite database (crop_system.db)
 ├── models/                    # Saved ML models and reference ranges (.pkl)
 ├── ml/                        # ML training and EDA scripts
 │   ├── data_analysis.py
+│   ├── inspect_data.py
 │   └── train_crop_model.py
 ├── modules/                   # UI and Logic modules for Streamlit
 │   ├── authentication.py
@@ -54,6 +56,7 @@ intelligent_crop_system/
 │   ├── reports.py
 │   ├── profile.py
 │   └── admin.py
+├── tests/                     # Test scripts (e.g., geolocator, weather API)
 └── utils/                     # Helper utilities
     └── database.py
 ```

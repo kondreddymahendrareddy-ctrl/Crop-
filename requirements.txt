@@ -9,3 +9,5 @@ requests
 passlib
 bcrypt
 python-dotenv
+fpdf2
+streamlit-geolocation
