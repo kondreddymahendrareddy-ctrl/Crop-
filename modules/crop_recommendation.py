@@ -74,7 +74,7 @@ def _render_weather_card(weather: dict):
 
 def render_crop_recommendation(user):
     st.markdown(
-        "<h2 style='color:#2e7d32;margin-bottom:4px;'>🌱 Crop Recommendation Engine</h2>"
+        "<h2 style='color:#2e7d32;margin-bottom:4px;'>Crop Recommendation Engine</h2>"
         "<p style='color:#666;margin-top:0;'>Enter your location and soil parameters to get real-time AI-powered crop predictions.</p>",
         unsafe_allow_html=True
     )
@@ -192,14 +192,14 @@ def render_crop_recommendation(user):
         with st.form("crop_form", clear_on_submit=False):
             s1, s2 = st.columns(2)
             with s1:
-                n = st.number_input("Nitrogen — N (kg/ha)",   value=50,
+                n = st.number_input("Nitrogen — N (kg/ha)",   value=50, min_value=0, max_value=300,
                                     help="Nitrogen content in your soil sample.")
-                p = st.number_input("Phosphorus — P (kg/ha)", value=50,
+                p = st.number_input("Phosphorus — P (kg/ha)", value=50, min_value=0, max_value=300,
                                     help="Phosphorus content in your soil sample.")
             with s2:
-                k  = st.number_input("Potassium — K (kg/ha)", value=50,
+                k  = st.number_input("Potassium — K (kg/ha)", value=50, min_value=0, max_value=300,
                                      help="Potassium content in your soil sample.")
-                ph = st.number_input("Soil pH",               value=6.5, step=0.1,
+                ph = st.number_input("Soil pH",               value=6.5, min_value=0.0, max_value=14.0, step=0.1,
                                      help="0=very acidic · 7=neutral · 14=very alkaline")
 
             st.markdown("---")

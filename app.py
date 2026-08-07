@@ -36,7 +36,7 @@ def main():
     
     if not st.session_state['logged_in']:
         # Entry Page
-        st.markdown("<h1 style='text-align: center; color: #2e7d32;'>Intelligent Crop Recommendation System 🌱</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: #2e7d32;'>Intelligent Crop Recommendation System</h1>", unsafe_allow_html=True)
         st.markdown("<h3 style='text-align: center; color: #558b2f;'>Smart Soil Analysis • Crop Prediction • Fertilizer Guidance</h3>", unsafe_allow_html=True)
         st.write("---")
         

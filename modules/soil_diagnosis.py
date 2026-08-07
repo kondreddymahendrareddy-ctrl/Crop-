@@ -94,20 +94,44 @@ def render_soil_diagnosis(user):
                 return f"{param_name} is too high for {crop_lower}. Avoid {param_name.lower()} application to prevent nutrient lockout and environmental runoff."
                 
         else: # Normal
-            return f"Excellent! The {param_name} level is perfectly optimized for growing {crop_lower}."
+            if param_name == "Nitrogen":
+                if crop_lower in legumes:
+                    return f"Excellent! Nitrogen is perfectly optimized. Since {crop_lower} is a legume, it will naturally fix additional N in the soil."
+                elif crop_lower in cereals:
+                    return f"Excellent! Nitrogen is perfectly optimized to support the rapid vegetative and leafy growth required by {crop_lower}."
+                elif crop_lower in fruits:
+                    return f"Excellent! Nitrogen is perfectly optimized to support a healthy leaf canopy for your {crop_lower} trees."
+                else:
+                    return f"Excellent! The Nitrogen level is perfectly optimized for growing {crop_lower}."
+            elif param_name == "Phosphorus":
+                if crop_lower in legumes:
+                    return f"Excellent! Phosphorus is perfectly optimized, which will ensure strong root nodulation for your {crop_lower}."
+                elif crop_lower in fruits:
+                    return f"Excellent! Phosphorus is perfectly optimized, which will maximize blooming and fruit yield for {crop_lower}."
+                else:
+                    return f"Excellent! The Phosphorus level is perfectly optimized for strong root development in {crop_lower}."
+            elif param_name == "Potassium":
+                if crop_lower in fruits:
+                    return f"Excellent! Potassium is perfectly optimized, ensuring high sugar content, firmness, and excellent fruit quality for {crop_lower}."
+                elif crop_lower in cereals:
+                    return f"Excellent! Potassium is perfectly optimized, giving your {crop_lower} strong stalks and superior disease resistance."
+                else:
+                    return f"Excellent! The Potassium level is perfectly optimized for growing {crop_lower}."
+            elif param_name == "pH":
+                return f"Excellent! The soil pH is perfectly optimized, ensuring maximum nutrient availability for {crop_lower}."
 
-    for param, status, name in [
+    for status, param_name, short_name in [
         (n_status, "Nitrogen", "N"),
         (p_status, "Phosphorus", "P"),
         (k_status, "Potassium", "K"),
         (ph_status, "pH", "ph")
     ]:
         if status == "Low":
-            warnings.append(f"⚠ {name} is below the optimal range for {crop.capitalize()}.")
+            warnings.append(f"⚠ {short_name} is below the optimal range for {crop.capitalize()}.")
         elif status == "High":
-            warnings.append(f"⚠ {name} is above the optimal range for {crop.capitalize()}.")
+            warnings.append(f"⚠ {short_name} is above the optimal range for {crop.capitalize()}.")
             
-        advice.append(get_custom_advice(crop, name, status))
+        advice.append(get_custom_advice(crop, param_name, status))
             
     # Layout
     col1, col2 = st.columns([1, 1])
@@ -162,8 +186,11 @@ def render_soil_diagnosis(user):
             c.execute('''
                 UPDATE analysis_history 
                 SET soil_diagnosis=?, warnings=?, improvement_advice=?
-                WHERE user_id=? AND recommended_crop=? 
-                ORDER BY created_at DESC LIMIT 1
+                WHERE id = (
+                    SELECT id FROM analysis_history 
+                    WHERE user_id=? AND recommended_crop=? 
+                    ORDER BY created_at DESC LIMIT 1
+                )
             ''', (diag_str, warn_str, adv_str, user['id'], crop))
             conn.commit()
             st.success("Analysis record updated successfully!")

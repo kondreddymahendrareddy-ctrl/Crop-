@@ -17,7 +17,7 @@ def get_dashboard_metrics(user_id):
     return total_analyses, last_crop, last_date
 
 def render_home(user):
-    st.markdown("<h2 style='color: #2e7d32;'>User Dashboard 🌱</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #2e7d32;'>User Dashboard</h2>", unsafe_allow_html=True)
     st.write("Welcome to the Intelligent Crop System. Use the sidebar to navigate through the modules.")
     
     total_analyses, last_crop, last_date = get_dashboard_metrics(user['id'])

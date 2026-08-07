@@ -1,116 +1,165 @@
-/* Custom Streamlit Premium Light/Nature Theme */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 /* Hide Streamlit default UI elements */
 #MainMenu {visibility: hidden;}
 header {visibility: hidden;}
 footer {visibility: hidden;}
 
-/* Main App Background & Text */
-.stApp {
-    background-color: #f4f7f6;
-    color: #2c3e50;
-    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+/* Global Font */
+html, body, [class*="css"]  {
+    font-family: 'Outfit', sans-serif !important;
 }
 
-/* Sidebar styling */
+/* Main App Background Image */
+.stApp {
+    background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1920&auto=format&fit=crop");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: #ffffff; /* Default text color for dark backgrounds */
+}
+
+/* Glassmorphism for Main Content Area */
+.main .block-container {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 3rem !important;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Sidebar styling - Glassmorphism */
 [data-testid="stSidebar"] {
-    background-color: #ffffff;
-    border-right: 1px solid #e0e0e0;
-    box-shadow: 2px 0 12px rgba(0,0,0,0.03);
+    background: rgba(15, 30, 20, 0.65) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 2px 0 12px rgba(0,0,0,0.4);
 }
 [data-testid="stSidebarNav"] span {
     font-size: 1.1rem;
     font-weight: 500;
-    color: #34495e;
+    color: #e0e0e0 !important;
 }
 
-/* Style all Buttons */
+/* Text Colors override for Glassmorphism */
+h1, h2, h3, h4, h5, h6, p, div, span, label {
+    color: #ffffff !important;
+    text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Exception for specific dark text inside cards */
+[data-testid="stForm"] h1, [data-testid="stForm"] h2, [data-testid="stForm"] h3, 
+[data-testid="stForm"] p, [data-testid="stForm"] div, [data-testid="stForm"] span, [data-testid="stForm"] label {
+    text-shadow: none !important;
+}
+
+/* Style all Buttons - Premium Look */
 div.stButton > button:first-child {
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #43a047, #1b5e20);
+    color: white !important;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 12px;
+    padding: 0.6rem 1.5rem;
     font-weight: 600;
+    letter-spacing: 0.5px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+    box-shadow: 0 4px 15px rgba(27, 94, 32, 0.5);
+    text-shadow: none !important;
 }
 div.stButton > button:first-child:hover {
-    background-color: #1b5e20;
-    box-shadow: 0 6px 16px rgba(27, 94, 32, 0.3);
-    transform: translateY(-2px);
-    color: white;
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    box-shadow: 0 8px 25px rgba(27, 94, 32, 0.6);
+    transform: translateY(-3px);
+    border: 1px solid rgba(255,255,255,0.8);
 }
 div.stButton > button:first-child:active {
     transform: translateY(0);
 }
 
-/* Inputs and Selectboxes */
+/* Inputs and Selectboxes - Glassmorphism */
 .stTextInput > div > div > input,
 .stNumberInput > div > div > input,
 .stSelectbox > div > div > div {
-    background-color: #ffffff !important;
-    border: 1px solid #dcdde1 !important;
-    border-radius: 8px !important;
-    color: #2c3e50 !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
     padding: 0.5rem 1rem !important;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    text-shadow: none !important;
 }
 .stTextInput > div > div > input:focus,
 .stNumberInput > div > div > input:focus,
 .stSelectbox > div > div > div:focus {
-    border-color: #4caf50 !important;
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+    border-color: #69f0ae !important;
+    box-shadow: 0 0 0 2px rgba(105, 240, 174, 0.4) !important;
+    background-color: rgba(255, 255, 255, 0.3) !important;
 }
 
-/* Form container */
+/* Fix dropdown menu popover background */
+div[role="listbox"] {
+    background-color: rgba(20, 40, 30, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    border-radius: 10px;
+}
+ul[role="listbox"] li {
+    color: #ffffff !important;
+}
+
+/* Form container - Glassmorphism */
 [data-testid="stForm"] {
-    background-color: #ffffff;
-    border: 1px solid #eaeaea;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
 /* Metric styling */
 [data-testid="stMetricValue"] {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    color: #2e7d32;
+    color: #69f0ae !important;
+    text-shadow: 0px 0px 10px rgba(105, 240, 174, 0.3);
 }
 [data-testid="stMetricDelta"] {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    color: #a5d6a7 !important;
 }
 
 /* Progress bars */
 .stProgress > div > div > div > div {
-    background-color: #4caf50;
+    background: linear-gradient(90deg, #4caf50, #69f0ae);
     border-radius: 10px;
 }
 .stProgress > div > div {
-    background-color: #e0e0e0;
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
 }
 
-/* Custom Headers */
-h1, h2, h3 {
-    color: #1b5e20 !important;
-    font-weight: 700 !important;
+/* Tabs */
+button[data-baseweb="tab"] {
+    background: transparent !important;
 }
-h1 {
-    font-size: 2.5rem !important;
-    margin-bottom: 1.5rem !important;
+button[data-baseweb="tab"] > div[data-testid="stMarkdownContainer"] > p {
+    font-weight: 600;
+    font-size: 1.1rem;
 }
-h2 {
-    font-size: 1.8rem !important;
-    margin-bottom: 1rem !important;
-}
-h3 {
-    font-size: 1.3rem !important;
-    color: #2e7d32 !important;
+div[data-baseweb="tab-highlight"] {
+    background-color: #69f0ae !important;
 }
 
-/* Text elements override */
-p, li {
-    color: #34495e;
+/* Checkbox text */
+.stCheckbox p {
+    text-shadow: none !important;
 }

@@ -11,7 +11,6 @@ def load_fertilizer_model():
     return None, None
 
 def render_fertilizer_guidance(user):
-    st.error("🚨 DEBUG MESSAGE: IF YOU CAN SEE THIS, THE NEW CODE IS RUNNING. PLEASE LET ME KNOW IF YOU SEE THIS!")
     st.markdown(
         "<h2 style='color:#2e7d32;margin-bottom:4px;'>💧 Fertilizer Recommendation Engine</h2>"
         "<p style='color:#666;margin-top:0;'>Get intelligent fertilizer recommendations based on soil health and crop type.</p>",
@@ -103,9 +102,9 @@ def render_fertilizer_guidance(user):
         
         with col1:
             st.markdown("**Soil Nutrients & Properties**")
-            n = st.number_input("Nitrogen (N)", value=default_n)
-            p = st.number_input("Phosphorus (P)", value=default_p)
-            k = st.number_input("Potassium (K)", value=default_k)
+            n = st.number_input("Nitrogen (N)", value=default_n, min_value=0, max_value=300)
+            p = st.number_input("Phosphorus (P)", value=default_p, min_value=0, max_value=300)
+            k = st.number_input("Potassium (K)", value=default_k, min_value=0, max_value=300)
             soil_types = encoders['Soil Type'].classes_
             soil_type = st.selectbox("Soil Type", soil_types)
             
