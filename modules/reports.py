@@ -53,10 +53,13 @@ def generate_pdf_report(record, user):
     
     if record['soil_diagnosis']:
         pdf.multi_cell(0, 8, f"Diagnosis: {record['soil_diagnosis']}")
+        pdf.set_x(10)
     if record['warnings']:
         pdf.multi_cell(0, 8, f"Warnings:\n" + "\n".join(["- " + w for w in record['warnings'].split('|')]))
+        pdf.set_x(10)
     if record['improvement_advice']:
         pdf.multi_cell(0, 8, f"Improvement Advice:\n" + "\n".join(["- " + a for a in record['improvement_advice'].split('|')]))
+        pdf.set_x(10)
         
     temp_dir = tempfile.gettempdir()
     filepath = os.path.join(temp_dir, f"report_{record['id']}.pdf")

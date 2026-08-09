@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from modules.weather_service import get_weather_data, get_location_suggestions, get_weather_by_ip
 from utils.database import get_db_connection
+from modules.soil_diagnosis import get_diagnosis_strings_for_db
 
 
 def load_crop_model():
@@ -13,7 +14,7 @@ def load_crop_model():
     return None
 
 
-def save_analysis_history(user_id, data, top_3, selected_crop):
+def save_analysis_history(user_id, data, top_3, selected_crop, diag_str=None, warn_str=None, adv_str=None):
     conn = get_db_connection()
     c = conn.cursor()
     try:
@@ -22,12 +23,14 @@ def save_analysis_history(user_id, data, top_3, selected_crop):
             INSERT INTO analysis_history
             (user_id, location, nitrogen, phosphorus, potassium, ph,
              temperature, humidity, rainfall,
-             recommended_crop, prediction_confidence, top_predictions)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             recommended_crop, prediction_confidence, top_predictions,
+             soil_diagnosis, warnings, improvement_advice)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             user_id, data["location"], data["N"], data["P"], data["K"], data["ph"],
             data["temperature"], data["humidity"], data["rainfall"],
-            selected_crop, top_3[0][1], top_preds_str
+            selected_crop, top_3[0][1], top_preds_str,
+            diag_str, warn_str, adv_str
         ))
         conn.commit()
     except Exception as e:
@@ -187,7 +190,9 @@ def render_crop_recommendation(user):
         weather = st.session_state["current_weather"]
         default_temp = float(weather["temperature"]) if weather and weather.get("temperature") is not None else 25.0
         default_hum  = float(weather["humidity"])    if weather and weather.get("humidity")    is not None else 70.0
-        default_rain = float(weather["rainfall"])    if weather and weather.get("rainfall")    is not None else 100.0
+        
+        # Never auto-fill seasonal rainfall with a single day's precipitation!
+        default_rain = 100.0
 
         with st.form("crop_form", clear_on_submit=False):
             s1, s2 = st.columns(2)
@@ -249,7 +254,10 @@ def render_crop_recommendation(user):
                     "N": n, "P": p, "K": k, "ph": ph,
                     "temperature": temp, "humidity": hum, "rainfall": rain
                 }
-                save_analysis_history(user["id"], db_data, top_3, best_crop)
+                
+                # Automatically generate diagnosis to save to DB for PDF reports
+                diag_str, warn_str, adv_str = get_diagnosis_strings_for_db(db_data, best_crop)
+                save_analysis_history(user["id"], db_data, top_3, best_crop, diag_str, warn_str, adv_str)
                 st.session_state["latest_analysis"] = db_data
                 st.rerun()
 

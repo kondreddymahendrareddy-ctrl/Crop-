@@ -20,6 +20,103 @@ def analyze_parameter(value, ranges):
     else:
         return "Normal", f"Value {value} is within reference range ({low:.1f} - {high:.1f})"
 
+def get_custom_advice(crop_name, param_name, status):
+    crop_lower = crop_name.lower()
+    legumes = ["chickpea", "kidneybeans", "lentil", "blackgram", "mungbean", "mothbeans", "pigeonpeas"]
+    cereals = ["rice", "maize", "jute", "cotton"]
+    fruits = ["apple", "mango", "orange", "grapes", "pomegranate", "banana", "papaya", "watermelon", "muskmelon"]
+    
+    if status == "Low":
+        if param_name == "Nitrogen":
+            if crop_lower in legumes:
+                return f"As a legume, {crop_lower} fixes its own nitrogen, but a starter dose of Urea is recommended to support initial growth."
+            elif crop_lower in cereals:
+                return f"{crop_lower.capitalize()} requires heavy nitrogen for leafy growth. Apply Urea or Ammonium Nitrate immediately."
+            else:
+                return f"Nitrogen is low. Apply Urea or organic compost to support vegetative growth for {crop_lower}."
+        elif param_name == "Phosphorus":
+            if crop_lower in legumes:
+                return f"Phosphorus is critical for root nodulation in {crop_lower}. Apply Diammonium Phosphate (DAP) or Single Super Phosphate (SSP)."
+            elif crop_lower in fruits:
+                return f"Apply DAP or bone meal to encourage strong root development and blooming for your {crop_lower} trees."
+            else:
+                return f"Phosphorus is low. Apply DAP to ensure healthy root development."
+        elif param_name == "Potassium":
+            if crop_lower in fruits:
+                return f"Potassium is crucial for the sugar content, color, and quality of {crop_lower}. Apply Muriate of Potash (MOP)."
+            else:
+                return f"Potassium is low. Apply MOP or wood ash to improve disease resistance and stalk strength."
+        elif param_name == "pH":
+            return f"The soil is too acidic for {crop_lower}. Apply agricultural lime (calcium carbonate) to raise the pH."
+            
+    elif status == "High":
+        if param_name == "Nitrogen":
+            return f"Excess Nitrogen can cause excessive leafy growth and reduce yield in {crop_lower}. Stop N-fertilizers and ensure good drainage."
+        elif param_name == "Phosphorus":
+            return f"High Phosphorus can lock up essential micronutrients like zinc and iron. Avoid P-fertilizers for this {crop_lower} crop."
+        elif param_name == "Potassium":
+            return f"Excess Potassium might interfere with calcium and magnesium uptake. Flush soil with water if necessary."
+        elif param_name == "pH":
+            return f"The soil is too alkaline for {crop_lower}. Apply elemental sulfur, peat moss, or acidifying fertilizers to lower the pH."
+            
+    else: # Normal
+        if param_name == "Nitrogen":
+            if crop_lower in legumes:
+                return f"Excellent! Nitrogen is perfectly optimized. Since {crop_lower} is a legume, it will naturally fix additional N in the soil."
+            elif crop_lower in cereals:
+                return f"Excellent! Nitrogen is perfectly optimized to support the rapid vegetative and leafy growth required by {crop_lower}."
+            elif crop_lower in fruits:
+                return f"Excellent! Nitrogen is perfectly optimized to support a healthy leaf canopy for your {crop_lower} trees."
+            else:
+                return f"Excellent! The Nitrogen level is perfectly optimized for growing {crop_lower}."
+        elif param_name == "Phosphorus":
+            if crop_lower in legumes:
+                return f"Excellent! Phosphorus is perfectly optimized, which will ensure strong root nodulation for your {crop_lower}."
+            elif crop_lower in fruits:
+                return f"Excellent! Phosphorus is perfectly optimized, which will maximize blooming and fruit yield for {crop_lower}."
+            else:
+                return f"Excellent! The Phosphorus level is perfectly optimized for strong root development in {crop_lower}."
+        elif param_name == "Potassium":
+            if crop_lower in fruits:
+                return f"Excellent! Potassium is perfectly optimized, ensuring high sugar content, firmness, and excellent fruit quality for {crop_lower}."
+            elif crop_lower in cereals:
+                return f"Excellent! Potassium is perfectly optimized, giving your {crop_lower} strong stalks and superior disease resistance."
+            else:
+                return f"Excellent! The Potassium level is perfectly optimized for growing {crop_lower}."
+        elif param_name == "pH":
+            return f"Excellent! The soil pH is perfectly optimized, ensuring maximum nutrient availability for {crop_lower}."
+
+def get_diagnosis_strings_for_db(data, crop):
+    ref_ranges = load_reference_ranges()
+    if not ref_ranges or crop not in ref_ranges:
+        return None, None, None
+        
+    crop_refs = ref_ranges[crop]
+    n_status, _ = analyze_parameter(data['N'], crop_refs['N'])
+    p_status, _ = analyze_parameter(data['P'], crop_refs['P'])
+    k_status, _ = analyze_parameter(data['K'], crop_refs['K'])
+    ph_status, _ = analyze_parameter(data['ph'], crop_refs['ph'])
+    
+    warnings = []
+    advice = []
+    
+    for status, param_name, short_name in [
+        (n_status, "Nitrogen", "N"),
+        (p_status, "Phosphorus", "P"),
+        (k_status, "Potassium", "K"),
+        (ph_status, "pH", "ph")
+    ]:
+        if status == "Low":
+            warnings.append(f"WARNING: {short_name} is below the optimal range for {crop.capitalize()}.")
+        elif status == "High":
+            warnings.append(f"WARNING: {short_name} is above the optimal range for {crop.capitalize()}.")
+        advice.append(get_custom_advice(crop, param_name, status))
+        
+    diag_str = f"N:{n_status}, P:{p_status}, K:{k_status}, pH:{ph_status}"
+    warn_str = "|".join(warnings) if warnings else None
+    adv_str = "|".join(advice) if advice else None
+    return diag_str, warn_str, adv_str
+
 def render_soil_diagnosis(user):
     st.markdown("<h2 style='color: #2e7d32;'>Soil Diagnostic Engine 🧪</h2>", unsafe_allow_html=True)
     
@@ -49,76 +146,6 @@ def render_soil_diagnosis(user):
     # Warnings and Advice
     warnings = []
     advice = []
-    
-    # Helper function for dynamic, crop-specific advice
-    def get_custom_advice(crop_name, param_name, status):
-        crop_lower = crop_name.lower()
-        legumes = ["chickpea", "kidneybeans", "lentil", "blackgram", "mungbean", "mothbeans", "pigeonpeas"]
-        cereals = ["rice", "maize", "jute", "cotton"]
-        fruits = ["apple", "mango", "orange", "grapes", "pomegranate", "banana", "papaya", "watermelon", "muskmelon"]
-        
-        if status == "Low":
-            if param_name == "Nitrogen":
-                if crop_lower in legumes:
-                    return f"As a legume, {crop_lower} fixes its own nitrogen, but a small starter dose of Nitrogen is recommended to boost early root growth."
-                elif crop_lower in cereals:
-                    return f"Nitrogen is critical for the heavy vegetative growth of {crop_lower}. Consider applying Urea or Ammonium Sulfate in split doses."
-                elif crop_lower in fruits:
-                    return f"{crop_lower.capitalize()} needs adequate Nitrogen for a healthy canopy and fruit size. Apply N-rich organic compost or fertilizers."
-                else:
-                    return f"Nitrogen is low. Apply nitrogen-based fertilizers to support the leafy growth of {crop_lower}."
-                    
-            elif param_name == "Phosphorus":
-                if crop_lower in legumes:
-                    return f"Phosphorus is essential for root nodulation in {crop_lower}. Apply Super Phosphate before sowing."
-                elif crop_lower in fruits:
-                    return f"Phosphorus promotes strong flower formation and fruit set in {crop_lower}. Consider adding bone meal or DAP."
-                else:
-                    return f"Phosphorus is vital for root development. Apply P-rich fertilizers to help {crop_lower} establish strong roots."
-                    
-            elif param_name == "Potassium":
-                if crop_lower in fruits:
-                    return f"Potassium is crucial for the sugar content, color, and quality of {crop_lower}. Apply Muriate of Potash (MOP)."
-                elif crop_lower in cereals:
-                    return f"Potassium improves disease resistance and stalk strength in {crop_lower}. Ensure adequate K application."
-                else:
-                    return f"Potassium is low. Apply K-rich fertilizers to improve the stress tolerance of {crop_lower}."
-                    
-            elif param_name == "pH":
-                return f"The soil is too acidic for {crop_lower}. Consider applying agricultural lime to raise the pH to optimal levels."
-                
-        elif status == "High":
-            if param_name == "pH":
-                return f"The soil is too alkaline for {crop_lower}. Consider adding elemental sulfur, peat moss, or organic matter to lower the pH."
-            else:
-                return f"{param_name} is too high for {crop_lower}. Avoid {param_name.lower()} application to prevent nutrient lockout and environmental runoff."
-                
-        else: # Normal
-            if param_name == "Nitrogen":
-                if crop_lower in legumes:
-                    return f"Excellent! Nitrogen is perfectly optimized. Since {crop_lower} is a legume, it will naturally fix additional N in the soil."
-                elif crop_lower in cereals:
-                    return f"Excellent! Nitrogen is perfectly optimized to support the rapid vegetative and leafy growth required by {crop_lower}."
-                elif crop_lower in fruits:
-                    return f"Excellent! Nitrogen is perfectly optimized to support a healthy leaf canopy for your {crop_lower} trees."
-                else:
-                    return f"Excellent! The Nitrogen level is perfectly optimized for growing {crop_lower}."
-            elif param_name == "Phosphorus":
-                if crop_lower in legumes:
-                    return f"Excellent! Phosphorus is perfectly optimized, which will ensure strong root nodulation for your {crop_lower}."
-                elif crop_lower in fruits:
-                    return f"Excellent! Phosphorus is perfectly optimized, which will maximize blooming and fruit yield for {crop_lower}."
-                else:
-                    return f"Excellent! The Phosphorus level is perfectly optimized for strong root development in {crop_lower}."
-            elif param_name == "Potassium":
-                if crop_lower in fruits:
-                    return f"Excellent! Potassium is perfectly optimized, ensuring high sugar content, firmness, and excellent fruit quality for {crop_lower}."
-                elif crop_lower in cereals:
-                    return f"Excellent! Potassium is perfectly optimized, giving your {crop_lower} strong stalks and superior disease resistance."
-                else:
-                    return f"Excellent! The Potassium level is perfectly optimized for growing {crop_lower}."
-            elif param_name == "pH":
-                return f"Excellent! The soil pH is perfectly optimized, ensuring maximum nutrient availability for {crop_lower}."
 
     for status, param_name, short_name in [
         (n_status, "Nitrogen", "N"),
@@ -127,9 +154,9 @@ def render_soil_diagnosis(user):
         (ph_status, "pH", "ph")
     ]:
         if status == "Low":
-            warnings.append(f"⚠ {short_name} is below the optimal range for {crop.capitalize()}.")
+            warnings.append(f"WARNING: {short_name} is below the optimal range for {crop.capitalize()}.")
         elif status == "High":
-            warnings.append(f"⚠ {short_name} is above the optimal range for {crop.capitalize()}.")
+            warnings.append(f"WARNING: {short_name} is above the optimal range for {crop.capitalize()}.")
             
         advice.append(get_custom_advice(crop, param_name, status))
             
