@@ -85,11 +85,11 @@ def login_ui():
                 if success:
                     st.session_state['user'] = result
                     st.session_state['logged_in'] = True
+                    st.session_state['current_page'] = "Dashboard"
                     st.success("Logged in successfully!")
                     st.rerun()
                 else:
                     st.error(result)
-
 
 def signup_ui():
     st.subheader("Create a new account")

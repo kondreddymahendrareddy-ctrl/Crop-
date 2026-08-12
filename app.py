@@ -7,14 +7,14 @@ from modules.soil_diagnosis import render_soil_diagnosis
 from modules.fertilizer_guidance import render_fertilizer_guidance
 from modules.history import render_history
 from modules.reports import render_reports
-from modules.admin import render_admin
 from modules.profile import render_profile
 
 # Page config
 st.set_page_config(
     page_title="Intelligent Crop System",
     page_icon="🌱",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # Initialize session state
@@ -52,33 +52,31 @@ def main():
         user = st.session_state['user']
         
         st.sidebar.title(f"Welcome, {user['full_name']}!")
-        st.sidebar.write(f"Role: {user['role']}")
         st.sidebar.write("---")
         
-        if user['role'] == 'ADMIN':
-            menu = ["Admin Dashboard", "Logout"]
-        else:
-            menu = ["Home", "Crop Recommendation", "Soil Analysis", "Fertilizer Guidance", "History", "Reports", "Profile", "Logout"]
+        menu = ["Dashboard", "Crop Recommendation", "Fertilizer Recommendation", "Soil Analysis", "History", "Reports", "Profile", "Logout"]
+        
+        current = st.session_state.get('current_page', 'Dashboard')
+        if current not in menu:
+            current = 'Dashboard'
             
-        choice = st.sidebar.radio("Navigation", menu, index=menu.index(st.session_state.get('current_page', 'Home')))
+        choice = st.sidebar.radio("Navigation", menu, index=menu.index(current))
         st.session_state['current_page'] = choice
         
         if choice == "Logout":
             logout()
-        elif choice == "Home":
+        elif choice == "Dashboard":
             render_home(user)
         elif choice == "Crop Recommendation":
             render_crop_recommendation(user)
         elif choice == "Soil Analysis":
             render_soil_diagnosis(user)
-        elif choice == "Fertilizer Guidance":
+        elif choice == "Fertilizer Recommendation":
             render_fertilizer_guidance(user)
         elif choice == "History":
             render_history(user)
         elif choice == "Reports":
             render_reports(user)
-        elif choice == "Admin Dashboard":
-            render_admin()
         elif choice == "Profile":
             render_profile(user)
         else:

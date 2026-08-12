@@ -190,9 +190,18 @@ def render_crop_recommendation(user):
         weather = st.session_state["current_weather"]
         default_temp = float(weather["temperature"]) if weather and weather.get("temperature") is not None else 25.0
         default_hum  = float(weather["humidity"])    if weather and weather.get("humidity")    is not None else 70.0
-        
-        # Never auto-fill seasonal rainfall with a single day's precipitation!
+        # Estimate seasonal rainfall based on live humidity to provide a dynamic default
         default_rain = 100.0
+        if weather and weather.get("humidity") is not None:
+            hum_val = float(weather["humidity"])
+            if hum_val > 85:
+                default_rain = 220.0  # High humidity -> tropical/wet
+            elif hum_val > 70:
+                default_rain = 150.0  # Moderate-high humidity
+            elif hum_val > 50:
+                default_rain = 100.0  # Average
+            else:
+                default_rain = 60.0   # Low humidity -> dry/arid
 
         with st.form("crop_form", clear_on_submit=False):
             s1, s2 = st.columns(2)
@@ -268,10 +277,10 @@ def render_crop_recommendation(user):
 
         st.markdown("---")
         st.markdown(f"""
-        <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
-                    border-radius:12px;padding:20px 28px;border-left:6px solid #2e7d32;margin-bottom:8px;">
-            <h2 style="color:#1b5e20;margin:0;">🏆 Recommended Crop: <span style="color:#2e7d32">{best_crop.capitalize()}</span></h2>
-            <p style="color:#388e3c;margin:4px 0 0 0;font-size:1.1em;">
+        <div style="background: rgba(10, 40, 25, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+                    border-radius:12px;padding:20px 28px;border-left:6px solid #69f0ae;margin-bottom:8px;box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid rgba(105,240,174,0.2); text-align: center;">
+            <h2 style="color:#69f0ae !important;margin:0; text-shadow: 0 0 10px rgba(105,240,174,0.4);">🏆 Recommended Crop: <span style="color:#ffffff !important">{best_crop.capitalize()}</span></h2>
+            <p style="color:#a5d6a7 !important;margin:4px 0 0 0;font-size:1.1em;">
                 Model Confidence: <b>{best_prob*100:.1f}%</b>
             </p>
         </div>

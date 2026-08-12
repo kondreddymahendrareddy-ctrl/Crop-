@@ -2,17 +2,18 @@
 
 /* Hide Streamlit default UI elements */
 #MainMenu {visibility: hidden;}
-header {visibility: hidden;}
 footer {visibility: hidden;}
 
-/* Global Font */
+/* Global Font & Premium Typography */
 html, body, [class*="css"]  {
     font-family: 'Outfit', sans-serif !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.3px;
 }
 
 /* Main App Background Image */
 .stApp {
-    background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1920&auto=format&fit=crop");
+    background: linear-gradient(135deg, #081C15 0%, #1B4332 50%, #081C15 100%);
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -162,4 +163,31 @@ div[data-baseweb="tab-highlight"] {
 /* Checkbox text */
 .stCheckbox p {
     text-shadow: none !important;
+}
+
+/* =========================================
+   PREMIUM ALIGNMENT OVERHAUL
+   ========================================= */
+
+/* Center ONLY Main Page Titles (H1) for Hero sections */
+h1 {
+    text-align: center !important;
+}
+
+/* Center all Metric displays */
+[data-testid="stMetricValue"], 
+[data-testid="stMetricLabel"], 
+[data-testid="stMetricDelta"] {
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+    display: flex !important;
+}
+
+/* Ensure metric containers align their contents centrally */
+[data-testid="stMetric"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
